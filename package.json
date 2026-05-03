@@ -1,0 +1,50 @@
+{
+  "name": "orderflow",
+  "version": "1.0.0",
+  "description": "Electron Local Ordering System",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "pack": "electron-builder --dir"
+  },
+  "build": {
+    "appId": "com.orderflow.app",
+    "productName": "Orderflow",
+    "artifactName": "Orderflow_Setup.exe",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**",
+      "node_modules/**/*",
+      "!dist",
+      "!orderflow_mobile",
+      "!Orderflow.apk"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Ibotweat",
+        "repo": "Orderflow"
+      }
+    ]
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "electron-updater": "^6.8.3",
+    "express": "^4.19.2",
+    "localtunnel": "^2.0.2",
+    "qrcode": "^1.5.4",
+    "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "electron": "^41.4.0",
+    "electron-builder": "^26.8.1"
+  }
+}

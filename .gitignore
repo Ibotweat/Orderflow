@@ -1,0 +1,37 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dépendances Node.js
+node_modules/
+
+# Builds et exécutables Electron
+dist/
+dist-zip/
+*.exe
+
+# Fichiers d'environnement (Mots de passe, clés secrètes)
+.env
+.env.local
+
+# Fichiers générés par l'éditeur ou l'OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Fichiers lourds ou compilés spécifiques au projet
+web/admin/Orderflow.apk
+*.apk
+
+# ---- Dossier Flutter (Application Mobile) ----
+orderflow_mobile/build/
+orderflow_mobile/.dart_tool/
+orderflow_mobile/.pub-cache/
+orderflow_mobile/.packages
+orderflow_mobile/android/key.properties
+orderflow_mobile/ios/.symlinks/
+orderflow_mobile/ios/Pods/

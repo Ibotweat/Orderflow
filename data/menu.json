@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Burger Classique",
+    "price": 8.5,
+    "icon": "🍔",
+    "description": "Bœuf, Cheddar, Salade, Tomate",
+    "category": "Burgers"
+  },
+  {
+    "id": 2,
+    "name": "Pizza Margherita",
+    "price": 11,
+    "icon": "🍕",
+    "description": "Sauce tomate, Mozzarella, Basilic",
+    "category": "Pizzas"
+  }
+]

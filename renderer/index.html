@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orderflow - Tableau de bord</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="logo">Orderflow</div>
+            <nav>
+                <button class="nav-item active" data-tab="serveur">Serveur & Accès</button>
+                <button class="nav-item" data-tab="menu">Gestion du Menu</button>
+                <button class="nav-item" data-tab="settings">Paramètres Admin</button>
+            </nav>
+            <div class="server-status-badge" id="sidebarStatus">
+                <div class="status-dot offline"></div>
+                <span>Hors ligne</span>
+            </div>
+        </aside>
+
+        <main class="content">
+            <!-- Onglet Serveur -->
+            <section id="tab-serveur" class="tab-pane active">
+                <header>
+                    <h2>Serveur & Accès</h2>
+                    <p class="subtitle">Démarrez le serveur local pour permettre la prise de commande.</p>
+                </header>
+                
+                <div class="card">
+                    <div class="form-group">
+                        <label for="portInput">Port du Serveur</label>
+                        <input type="number" id="portInput" value="3000" min="1024" max="65535">
+                    </div>
+                    <button id="startBtn" class="btn primary">Démarrer le Serveur</button>
+                    <button id="stopBtn" class="btn secondary hidden">Arrêter le Serveur</button>
+                </div>
+
+                <div id="statusAlert" class="alert hidden"></div>
+
+                <div id="qrPanel" class="card hidden">
+                    <h3>Accès rapide</h3>
+                    <p class="text-sm">Scannez ce QR Code pour accéder directement à l'interface de prise de commande.</p>
+                    
+                    <div class="qr-container" style="display: flex; flex-direction: column; align-items: center; margin-top: 15px;">
+                        <canvas id="qrcode" style="filter: blur(8px); transition: filter 0.3s; margin-bottom: 10px;"></canvas>
+                        <button id="toggleQrBtn" class="btn secondary small">👁️ Afficher le QR Code</button>
+                        <div id="serverRecap" style="margin-top: 15px; background: rgba(0,0,0,0.03); padding: 10px 20px; border-radius: 8px; font-weight: 500; text-align: center; border: 1px solid var(--border-color);">
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">Adresse IP :</span> <strong id="recapIp">...</strong><br>
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">Port :</span> <strong id="recapPort">...</strong>
+                        </div>
+                    </div>
+                    <div class="url-display hidden" id="urlDisplay">http://...</div>
+
+                    <div class="links-actions mt-1" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <button id="openWebBtn" class="btn secondary outline">Ouvrir Web</button>
+                        <button id="openDesktopBtn" class="btn secondary outline">Ouvrir Desktop</button>
+                        <button id="shareInstallBtn" class="btn primary">Lien de l'appli (APK)</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Onglet Menu -->
+            <section id="tab-menu" class="tab-pane hidden">
+                <header>
+                    <h2>Gestion du Menu</h2>
+                    <p class="subtitle">Ajoutez ou supprimez des aliments disponibles.</p>
+                </header>
+
+                <div class="card">
+                    <h3>Ajouter un produit</h3>
+                    <form id="addMenuForm" class="add-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" id="menuName" required placeholder="Ex: Burger Bacon">
+                            </div>
+                            <div class="form-group">
+                                <label>Prix (€)</label>
+                                <input type="number" id="menuPrice" step="0.10" required placeholder="Ex: 12.50">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Catégorie</label>
+                                <select id="menuCategory" required>
+                                    <!-- Rempli par JS -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Émoji / Icône</label>
+                                <input type="text" id="menuIcon" required placeholder="Ex: 🍔">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="menuDesc" placeholder="Ex: Bœuf, Bacon, Cheddar...">
+                        </div>
+                        <button type="submit" class="btn primary">Ajouter</button>
+                    </form>
+                </div>
+
+                <div class="card no-padding mt-1">
+                    <h3 class="padding-20 border-bottom">Produits actuels</h3>
+                    <div id="menuList" class="item-list">
+                        <!-- Rempli par JS -->
+                    </div>
+                </div>
+
+                <div class="card mt-1">
+                    <h3>Gestion des Catégories</h3>
+                    <div class="form-row" style="align-items: flex-end;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <input type="text" id="newCategoryName" placeholder="Nouvelle catégorie (ex: Desserts)">
+                        </div>
+                        <button id="addCategoryBtn" class="btn primary" style="height: 40px;">Ajouter</button>
+                    </div>
+                    <div id="categoryList" class="item-list mt-1" style="max-height: 200px;">
+                        <!-- Rempli par JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Onglet Paramètres -->
+            <section id="tab-settings" class="tab-pane hidden">
+                <header>
+                    <h2>Paramètres Administrateur</h2>
+                    <p class="subtitle">Sécurité et accès.</p>
+                </header>
+
+                <div class="card mb-1">
+                    <h3>Mode de lancement du Logiciel</h3>
+                    <p class="text-sm">Définissez si ce PC doit agir comme le serveur principal ou comme un écran de commande/cuisine.</p>
+                    <div class="form-group mt-1">
+                        <select id="appModeSelect">
+                            <option value="server">Serveur Principal (Défaut)</option>
+                            <option value="client">Terminal de Commande / Cuisine</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="remoteServerUrlGroup">
+                        <label>Adresse du Serveur distant</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="remoteServerUrlSettings" placeholder="Ex: http://192.168.1.50:3000">
+                            <button id="autoDetectBtn" class="btn secondary outline" style="white-space: nowrap;">🔍 Auto-détection</button>
+                        </div>
+                        <p class="text-sm mt-1" id="autoDetectStatus"></p>
+                    </div>
+                    <button id="saveModeBtn" class="btn primary">Appliquer et Redémarrer</button>
+                </div>
+
+                <div class="card mb-1">
+                    <h3>Code d'accès Admin</h3>
+                    <p class="text-sm">Ce code est requis pour accéder aux pages web (Commande et Cuisine).</p>
+                    <div class="form-group mt-1">
+                        <input type="text" id="adminCodeInput" placeholder="Ex: 1234">
+                    </div>
+                    <button id="saveCodeBtn" class="btn primary">Enregistrer le code</button>
+                </div>
+
+                <div class="card mb-1">
+                    <h3>Versions & Mises à jour</h3>
+                    <p class="text-sm">Vérifiez si vos applications sont à jour par rapport à la dernière version publiée.</p>
+                    <div style="background: var(--bg-color); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <p style="margin-bottom: 5px;"><strong>Logiciel PC (Serveur)</strong></p>
+                        <p class="text-sm">Version actuelle : <span id="currentPcVersion">1.0.0</span></p>
+                        <p class="text-sm">Version disponible : <strong id="githubPcVersion">Recherche...</strong></p>
+                        <button id="updatePcBtn" class="btn secondary outline mt-1" disabled>Vérification...</button>
+                    </div>
+                    <div style="background: var(--bg-color); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <p style="margin-bottom: 5px;"><strong>Application Mobile (Client)</strong></p>
+                        <p class="text-sm" style="color: var(--text-muted);">(Vérifiez sur votre téléphone la version de l'application pour comparer)</p>
+                        <p class="text-sm">Version disponible sur GitHub : <strong id="githubMobileVersion">Recherche...</strong></p>
+                        <button id="downloadApkBtn" class="btn secondary outline mt-1">Télécharger la mise à jour APK</button>
+                    </div>
+                </div>
+
+                <div class="card danger-zone">
+                    <h3>Déconnexion globale</h3>
+                    <p class="text-sm">Déconnecte toutes les tablettes et téléphones actuellement connectés au système. Ils devront retaper le code d'accès.</p>
+                    <button id="disconnectAllBtn" class="btn danger mt-1">Déconnecter tous les appareils</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Conteneur Plein Écran Terminal -->
+    <div id="terminalContainer" class="hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; background: white;">
+        <iframe id="terminalFrame" style="width: 100%; height: 100%; border: none;"></iframe>
+        <button id="exitTerminalBtn" style="position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.5); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; z-index: 10000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">❌</button>
+    </div>
+
+    <!-- Modal Choix Quitter Terminal -->
+    <div id="terminalExitModal" class="modal hidden" style="z-index: 10001;">
+        <div class="modal-content card" style="padding: 20px;">
+            <h3 style="margin-bottom: 20px;">Menu Terminal</h3>
+            <button id="btnSwitchToServer" class="btn secondary outline" style="width: 100%; margin-bottom: 10px;">⚙️ Paramètres (Basculer sur Serveur)</button>
+            <button id="btnQuitApp" class="btn danger" style="width: 100%; margin-bottom: 10px;">❌ Quitter l'application</button>
+            <button onclick="document.getElementById('terminalExitModal').classList.add('hidden')" class="btn secondary" style="width: 100%;">Annuler</button>
+        </div>
+    </div>
+
+    <!-- Modal PWA Installation -->
+    <div id="installModal" class="modal hidden">
+        <div class="modal-content card">
+            <span class="close-modal">&times;</span>
+            <h2>Installer l'application (PWA)</h2>
+            <p class="text-sm">Scannez ce QR Code pour accéder à la page d'installation sur votre téléphone.</p>
+            <div class="qr-container">
+                <canvas id="qrInstall"></canvas>
+                <div class="url-display" id="urlInstallDisplay">http://...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Loader -->
+    <div id="updateOverlay" class="hidden" style="position: fixed; bottom: 20px; right: 20px; background: var(--card-bg); padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 10002; border: 1px solid var(--border-color); width: 300px;">
+        <h3 style="margin-bottom: 10px; font-size: 1.1rem;">Mise à jour en cours...</h3>
+        <div style="background: #e2e8f0; border-radius: 6px; height: 10px; width: 100%; overflow: hidden; margin-bottom: 10px;">
+            <div id="updateProgressBar" style="background: var(--primary); width: 0%; height: 100%; transition: width 0.3s;"></div>
+        </div>
+        <p id="updateProgressText" style="font-size: 0.9rem; color: var(--text-muted); margin: 0; display: flex; justify-content: space-between;">
+            <span>0%</span>
+            <span id="updateTimeRemaining">Calcul...</span>
+        </p>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

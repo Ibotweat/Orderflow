@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation de l'Application - Orderflow</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        .install-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-color);
+            padding: 20px;
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .card h2 { margin-bottom: 0.5rem; color: var(--text-main); font-size: 1.8rem; }
+        .card p { color: var(--text-muted); margin-bottom: 2rem; font-size: 1rem; line-height: 1.6; }
+        .btn { width: 100%; padding: 15px; font-size: 1.1rem; margin-bottom: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; box-sizing: border-box; }
+        .btn.primary { background: var(--primary); color: white; }
+        .success-icon { font-size: 4.5rem; margin-bottom: 15px; }
+        .warning-box {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="install-container">
+        <div class="card">
+            <div class="success-icon">🤖</div>
+            <h2>Application Android</h2>
+            <p>Téléchargez l'application officielle Orderflow pour vos serveurs. Elle offre une expérience plein écran, rapide et optimisée pour la prise de commande.</p>
+            
+            <a href="Orderflow.apk" download class="btn primary">Télécharger l'APK</a>
+            
+            <div class="warning-box">
+                <strong style="color: #ef4444; margin-bottom: 5px; display: block;">Important lors de l'installation :</strong>
+                Comme cette application n'est pas sur le Play Store, Android affichera un message d'avertissement. Cliquez sur <b>"Paramètres"</b> puis cochez <b>"Autoriser depuis cette source"</b>, et enfin sur <b>"Installer quand même"</b>.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

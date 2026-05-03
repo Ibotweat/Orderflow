@@ -1,0 +1,67 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-electron:
+    name: Build PC App (Windows)
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm install
+      - name: Build Electron
+        run: npx electron-builder --win -p never
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.exe
+            dist/*.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-android:
+    name: Build Mobile App (Android)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Install dependencies
+        working-directory: ./orderflow_mobile
+        run: flutter pub get
+      - name: Make gradlew executable
+        working-directory: ./orderflow_mobile/android
+        run: chmod +x gradlew
+      - name: Build APK
+        working-directory: ./orderflow_mobile
+        run: flutter build apk --release
+      - name: Rename APK
+        run: mv orderflow_mobile/build/app/outputs/flutter-apk/app-release.apk Orderflow_Mobile.apk
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Orderflow_Mobile.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

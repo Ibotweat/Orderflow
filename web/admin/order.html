@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prise de Commande - Orderflow</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="client-body">
+    <nav class="navbar">
+        <div class="logo">Orderflow</div>
+        <div class="nav-dropdown">
+            <button class="dropbtn">Navigation ▼</button>
+            <div class="dropdown-content">
+                <a href="order.html" class="active">Commander</a>
+                <a href="orders.html">Cuisine</a>
+                <a href="#" id="logoutBtn" style="color: var(--status-attente);">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="order-container">
+        <section class="menu-section">
+            <div class="category-filter" id="categoryFilter">
+                <!-- Catégories + Panier -->
+            </div>
+            <div class="menu-grid" id="menuGrid">
+                <!-- Les produits seront injectés ici par le JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Panier -->
+    <div id="cartModal" class="modal hidden">
+        <div class="modal-content card" style="max-width: 500px; max-height: 90vh; display: flex; flex-direction: column;">
+            <span class="close-modal" onclick="document.getElementById('cartModal').classList.add('hidden')">&times;</span>
+            <h2 style="margin-top: 0;">Votre Panier</h2>
+            
+            <div class="form-group" style="text-align: left;">
+                <label for="tableNumber">Table ou Nom (Optionnel)</label>
+                <input type="text" id="tableNumber" placeholder="Ex: Table 4, Emporter...">
+            </div>
+
+            <div class="cart-items" id="cartItems" style="flex-grow: 1; overflow-y: auto; text-align: left;">
+                <p class="empty-cart-msg">Le panier est vide.</p>
+            </div>
+
+            <div class="cart-summary" style="margin-top: 15px;">
+                <div class="total-row">
+                    <span>Total:</span>
+                    <span id="cartTotal" style="color: var(--primary);">0.00 €</span>
+                </div>
+                <button id="checkoutBtn" class="btn primary" disabled>Valider la commande</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détails Produit -->
+    <div id="itemDetailsModal" class="modal hidden">
+        <div class="modal-content card">
+            <span class="close-modal" onclick="document.getElementById('itemDetailsModal').classList.add('hidden')">&times;</span>
+            <div class="item-icon" id="modalIcon" style="font-size: 4rem; margin-bottom: 10px;">🍔</div>
+            <h2 id="modalTitle">Nom Produit</h2>
+            <p id="modalDesc" class="text-muted" style="margin: 15px 0;">Description détaillée du produit.</p>
+            <h3 id="modalPrice" style="color: var(--primary);">0.00 €</h3>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">Commande envoyée !</div>
+
+    <script src="script.js"></script>
+</body>
+</html>

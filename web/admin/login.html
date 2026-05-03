@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Orderflow</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-color);
+            padding: 20px;
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .card h2 { margin-bottom: 0.5rem; color: var(--text-main); }
+        .card p { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+        
+        .pin-input {
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: 10px;
+            margin-bottom: 1rem;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            font-family: inherit;
+        }
+        .pin-input:focus { border-color: var(--primary); outline: none; }
+        
+        .error-msg { color: #ef4444; margin-bottom: 1rem; font-size: 0.9rem; min-height: 20px; font-weight: 500; }
+        
+        .btn { width: 100%; padding: 15px; font-size: 1.1rem; margin-bottom: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;}
+        .btn.primary { background: var(--primary); color: white; transition: background 0.2s; }
+        .btn.primary:hover { background: var(--primary-dark); }
+        
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .num-btn {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+            font-family: inherit;
+        }
+        .num-btn:active {
+            background: var(--border-color);
+            transform: scale(0.95);
+        }
+        .clear-btn { color: #ef4444; }
+        .del-btn { color: var(--text-muted); }
+        .mt-1 { margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="card" id="loginCard" style="display: none;">
+            <h2>Accès Sécurisé</h2>
+            <p>Veuillez entrer le code d'accès administrateur.</p>
+            
+            <form id="loginForm">
+                <input type="password" id="pinCode" class="pin-input" required placeholder="••••" autocomplete="off">
+                <div id="errorMsg" class="error-msg"></div>
+                
+                <div class="numpad">
+                    <button type="button" class="num-btn">1</button>
+                    <button type="button" class="num-btn">2</button>
+                    <button type="button" class="num-btn">3</button>
+                    <button type="button" class="num-btn">4</button>
+                    <button type="button" class="num-btn">5</button>
+                    <button type="button" class="num-btn">6</button>
+                    <button type="button" class="num-btn">7</button>
+                    <button type="button" class="num-btn">8</button>
+                    <button type="button" class="num-btn">9</button>
+                    <button type="button" class="num-btn clear-btn">C</button>
+                    <button type="button" class="num-btn">0</button>
+                    <button type="button" class="num-btn del-btn">⌫</button>
+                </div>
+
+                <button type="submit" class="btn primary">Connexion</button>
+            </form>
+        </div>
+        
+        <div class="card" id="loadingCard">
+            <h2>Chargement...</h2>
+            <p>Vérification de l'accès en cours.</p>
+            <div style="margin: 20px auto; width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+
+    <script>
+        // --- Fetch Interceptor for Token Auth ---
+        const originalFetch = window.fetch;
+        window.fetch = async function(resource, config = {}) {
+            if (typeof resource === 'string' && resource.startsWith('/api/')) {
+                const token = localStorage.getItem('orderflow_token');
+                if (token) {
+                    config.headers = { ...config.headers, 'Authorization': `Bearer ${token}` };
+                }
+            }
+            return originalFetch(resource, config);
+        };
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(() => console.log("SW Registered"));
+        }
+
+        const loginCard = document.getElementById('loginCard');
+        const loadingCard = document.getElementById('loadingCard');
+        const loginForm = document.getElementById('loginForm');
+        const pinCodeInput = document.getElementById('pinCode');
+        const errorMsg = document.getElementById('errorMsg');
+
+        // Numpad Logic
+        document.querySelectorAll('.num-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                errorMsg.textContent = ''; // clear error on type
+                if(btn.classList.contains('clear-btn')) {
+                    pinCodeInput.value = '';
+                } else if(btn.classList.contains('del-btn')) {
+                    pinCodeInput.value = pinCodeInput.value.slice(0, -1);
+                } else {
+                    pinCodeInput.value += btn.textContent;
+                }
+            });
+        });
+
+        // === Auto Login via URL ===
+        const urlParams = new URLSearchParams(window.location.search);
+        const codeParam = urlParams.get('code');
+        
+        if (codeParam) {
+            pinCodeInput.value = codeParam;
+            attemptLogin(codeParam, true);
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+            // Check session
+            fetch('/api/auth/check').then(res => {
+                if (res.status === 200) {
+                    window.location.href = '/admin/order.html';
+                } else {
+                    showLoginForm();
+                }
+            }).catch(e => {
+                showLoginForm();
+            });
+        }
+
+        function showLoginForm() {
+            loadingCard.style.display = 'none';
+            loginCard.style.display = 'block';
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            attemptLogin(pinCodeInput.value, false);
+        });
+
+        async function attemptLogin(code, isAutoLogin) {
+            const btn = loginForm.querySelector('button[type="submit"]');
+            if(!isAutoLogin) {
+                btn.disabled = true;
+                btn.textContent = "Vérification...";
+            }
+            
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    if (data.sessionId) localStorage.setItem('orderflow_token', data.sessionId);
+                    window.location.href = '/admin/order.html';
+                } else {
+                    if(isAutoLogin) showLoginForm();
+                    errorMsg.textContent = data.message || "Code incorrect.";
+                    pinCodeInput.value = '';
+                }
+            } catch (err) {
+                if(isAutoLogin) showLoginForm();
+                errorMsg.textContent = "Erreur de connexion au serveur.";
+            } finally {
+                if(!isAutoLogin) {
+                    btn.disabled = false;
+                    btn.textContent = "Connexion";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

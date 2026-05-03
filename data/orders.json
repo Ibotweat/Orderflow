@@ -1,0 +1,19 @@
+[
+  {
+    "id": "1777669387595",
+    "table": "1",
+    "items": [
+      {
+        "id": 2,
+        "name": "Pizza Margherita",
+        "price": 11,
+        "icon": "🍕",
+        "description": "Sauce tomate, Mozzarella, Basilic",
+        "quantity": 1
+      }
+    ],
+    "total": 11,
+    "status": "Préparation",
+    "timestamp": "2026-05-01T21:03:07.595Z"
+  }
+]

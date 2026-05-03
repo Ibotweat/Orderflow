@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuisine / Serveur - Orderflow</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="kitchen-body">
+    <nav class="navbar">
+        <div class="logo">Orderflow</div>
+        <div class="nav-dropdown">
+            <button class="dropbtn">Navigation ▼</button>
+            <div class="dropdown-content">
+                <a href="order.html">Commander</a>
+                <a href="orders.html" class="active">Cuisine</a>
+                <a href="#" id="logoutBtn" style="color: var(--status-attente);">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="kitchen-container">
+        <header class="kitchen-header">
+            <h2>Commandes en cours</h2>
+            <button id="refreshBtn" class="btn secondary small">Actualiser</button>
+        </header>
+
+        <div class="orders-grid" id="ordersGrid">
+            <!-- Les commandes seront injectées ici par le JS -->
+            <div class="loading-msg">Chargement des commandes...</div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
